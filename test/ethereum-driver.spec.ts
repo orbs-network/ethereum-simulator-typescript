@@ -22,6 +22,16 @@ describe("simulator test", function() {
         expect(ethSim.contractAddress).to.not.equal("");
     });
 
+    it("should retrieve values from the contract", async () => {
+        const source = ethSim.getStoredDataFromMemory();
+        const res = ethSim.getDataFromEthereum();
+        const resultData = JSON.parse(res.resultJson);
+        expect(resultData).to.ownProperty("intValue", source.intValue.toString());
+        expect(resultData).to.ownProperty("stringValue", source.stringValue);
+        expect(res).to.ownProperty("blockNumber");
+        expect(res).to.ownProperty("timestamp");
+    })
+
     afterEach(async () => {
         ethSim.close();
     })

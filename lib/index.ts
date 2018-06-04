@@ -17,11 +17,19 @@ export abstract class EthereumSimulator {
     abstract listen(port: number): Promise<void>;
     abstract close(): void;
     abstract getStoredDataFromMemory(): StorageContractItem;
+    abstract getDataFromEthereum(): DataFromEthereum;
+
 }
 
 export interface StorageContractItem {
     intValue: number;
     stringValue: string;
+}
+
+export interface DataFromEthereum {
+    resultJson: string;
+    blockNumber: number;
+    timestamp: number;
 }
 
 class EthereumSimImpl extends EthereumSimulator {
@@ -57,6 +65,14 @@ class EthereumSimImpl extends EthereumSimulator {
             intValue: this.storedInt,
             stringValue: this.storedString
         };
+    }
+
+    public getDataFromEthereum(): DataFromEthereum {
+        return {
+            resultJson: "{ }",
+            blockNumber: 1,
+            timestamp: 1
+        }
     }
 
     public async compileStorageContract(intValue: number, stringValue: string): Promise<string> {
