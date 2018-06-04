@@ -17,8 +17,18 @@ export abstract class EthereumSimulator {
     abstract listen(port: number): Promise<void>;
     abstract close(): void;
     abstract getStoredDataFromMemory(): StorageContractItem;
-    abstract getDataFromEthereum(): DataFromEthereum;
+    abstract async getDataFromEthereum(contractAddress: string): Promise<DataFromEthereum>;
 
+}
+
+export interface EthereumFunctionParameter {
+    name: string;
+    type: string;
+}
+export interface EthereumFunctionInterface {
+    name: string;
+    inputs: EthereumFunctionParameter[];
+    outputs: EthereumFunctionParameter[];
 }
 
 export interface StorageContractItem {
@@ -27,7 +37,7 @@ export interface StorageContractItem {
 }
 
 export interface DataFromEthereum {
-    resultJson: string;
+    result: string;
     blockNumber: number;
     timestamp: number;
 }
@@ -67,12 +77,30 @@ class EthereumSimImpl extends EthereumSimulator {
         };
     }
 
-    public getDataFromEthereum(): DataFromEthereum {
-        return {
-            resultJson: "{ }",
-            blockNumber: 1,
-            timestamp: 1
-        }
+    public async getDataFromEthereum(contractAddress: string): Promise<DataFromEthereum> {
+        const web3 = new Web3(new Web3.providers.HttpProvider(this.getEndpoint()));
+
+        const ethFuncInterface = {
+            name: "getValues",
+            inputs: <EthereumFunctionParameter[]>[],
+            outputs: [
+              { name: "intValue", type: "uint256" },
+              { name: "stringValue", type: "string" }
+            ]
+          };
+
+        const block = await web3.eth.getBlock("latest");
+        const callData = web3.eth.abi.encodeFunctionCall(ethFuncInterface, <string[]>[]);
+        const outputHexString = await web3.eth.call({ to: contractAddress, data: callData }, block.number);
+        const output = web3.eth.abi.decodeParameters(ethFuncInterface.outputs as any, outputHexString);
+
+        return new Promise<DataFromEthereum>((resolve) => {
+            resolve({
+                result: output.__length__ === 1 ? output[0] : output,
+                blockNumber: block.number,
+                timestamp: block.timestamp
+            })
+        })
     }
 
     public async compileStorageContract(intValue: number, stringValue: string): Promise<string> {

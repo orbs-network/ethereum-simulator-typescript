@@ -8,13 +8,13 @@ const expect = chai.expect;
 
 describe("simulator test", function() {
     this.timeout(10000);
-    const SERVER_IP_ADDRESS = "127.0.0.1";
     let ethSim: EthereumSimulator;
 
     beforeEach(async () => {
         const ethSimPort = await getPort();
-
+        
         ethSim = await createEthSimulator(ethSimPort);
+        console.log(`ethsim online on port ${ethSimPort}`);
     });
     
     it("should launch successfully", async () => {
@@ -24,12 +24,11 @@ describe("simulator test", function() {
 
     it("should retrieve values from the contract", async () => {
         const source = ethSim.getStoredDataFromMemory();
-        const res = ethSim.getDataFromEthereum();
-        const resultData = JSON.parse(res.resultJson);
-        expect(resultData).to.ownProperty("intValue", source.intValue.toString());
-        expect(resultData).to.ownProperty("stringValue", source.stringValue);
-        expect(res).to.ownProperty("blockNumber");
-        expect(res).to.ownProperty("timestamp");
+        const res = await ethSim.getDataFromEthereum(ethSim.contractAddress);
+        expect(res).to.have.property("result").that.has.property("intValue", source.intValue.toString());
+        expect(res).to.have.property("result").that.has.property("stringValue", source.stringValue);
+        expect(res).to.have.property("blockNumber");
+        expect(res).to.have.property("timestamp");
     })
 
     afterEach(async () => {
