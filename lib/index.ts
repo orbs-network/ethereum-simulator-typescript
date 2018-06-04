@@ -1,55 +1,22 @@
-// purpose of this file is to simulate ethereum for the sidechain connector
 import * as ganache from "ganache-core";
 import * as solc from "solc";
+import {simpleStorage} from "./contracts/simple-storage.sol";
 const Web3 = require("web3");
 
 import { Contract } from "web3/types";
 
-const SIMPLE_STORAGE_SOLIDITY_CONTRACT = `
-pragma solidity ^0.4.0;
-contract SimpleStorage {
-  struct Item {
-      uint256 intValue;
-      string stringValue;
-  }
-  Item item;
-
-  constructor(uint256 _intValue, string _stringValue) public {
-      set(_intValue, _stringValue);
-  }
-
-  function set(uint256 _intValue, string _stringValue) private {
-    item.intValue = _intValue;
-    item.stringValue = _stringValue;
-  }
-
-  function getInt() view public returns (uint256) {
-    return item.intValue;
-  }
-
-  function getString() view public returns (string) {
-    return item.stringValue;
-  }
-
-  function getValues() public view returns (uint256 intValue, string stringValue) {
-    intValue = item.intValue;
-    stringValue = item.stringValue;
-  }
-}
-`;
-
 export abstract class EthereumSimulator {
-   contractAddress: string;
-   port: number;
+    contractAddress: string;
+    port: number;
 
-   constructor () {
+    constructor() {
         this.port = 0;
         this.contractAddress = "";
-   }
+    }
 
-   abstract listen(port: number): Promise<void>;
-   abstract close(): void;
-   abstract getStoredDataFromMemory(): StorageContractItem;
+    abstract listen(port: number): Promise<void>;
+    abstract close(): void;
+    abstract getStoredDataFromMemory(): StorageContractItem;
 }
 
 export interface StorageContractItem {
@@ -72,7 +39,7 @@ class EthereumSimImpl extends EthereumSimulator {
     public async listen(port: number): Promise<void> {
         this.port = port;
         return new Promise<void>((resolve, reject) => {
-            this.ganacheServer.listen(this.port, function() {
+            this.ganacheServer.listen(this.port, function () {
                 resolve();
             });
         });
@@ -96,7 +63,7 @@ class EthereumSimImpl extends EthereumSimulator {
         const web3 = new Web3(new Web3.providers.HttpProvider(this.getEndpoint()));
 
         // compile contract
-        const output = solc.compile(SIMPLE_STORAGE_SOLIDITY_CONTRACT, 1);
+        const output = solc.compile(simpleStorage, 1);
         if (output.errors)
             throw output.errors;
         const bytecode = output.contracts[":SimpleStorage"].bytecode;
