@@ -1,0 +1,34 @@
+{
+  "name": "ethereum-simulator",
+  "version": "1.0.0",
+  "description": "A typescript library to instrument ganache+web3+solc and test a smart contract end-to-end",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha dist/test/*.spec.js"
+  },
+  "keywords": [
+    "ganache",
+    "ethereum",
+    "solc",
+    "web3"
+  ],
+  "author": "Orbs",
+  "license": "MIT",
+  "dependencies": {
+    "ganache-core": "^2.1.0",
+    "solc": "^0.4.24",
+    "web3": "^1.0.0-beta.34"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.3",
+    "@types/get-port": "^3.2.0",
+    "@types/mocha": "^5.2.1",
+    "@types/node": "^10.3.0",
+    "chai": "^4.1.2",
+    "get-port": "^3.2.0",
+    "mocha": "^5.2.0",
+    "typescript": "^2.9.1"
+  }
+}
