@@ -16,6 +16,10 @@
   ],
   "author": "Orbs",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orbs-network/ethereum-simulator-typescript.git"
+  },
   "dependencies": {
     "ganache-core": "^2.1.0",
     "solc": "^0.4.24",
