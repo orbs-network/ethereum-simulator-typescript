@@ -1,6 +1,5 @@
 import * as ganache from "ganache-core";
 import * as solc from "solc";
-import {simpleStorage} from "./contracts/simple-storage.sol";
 const Web3 = require("web3");
 
 import { Contract } from "web3/types";
@@ -18,7 +17,7 @@ export abstract class EthereumSimulator {
     abstract close(): void;
     abstract getStoredDataFromMemory(): StorageContractItem;
     abstract async getDataFromEthereum(contractAddress: string): Promise<DataFromEthereum>;
-
+    abstract addContract(contractCode: string): void;
 }
 
 export interface EthereumFunctionParameter {
@@ -46,11 +45,15 @@ class EthereumSimImpl extends EthereumSimulator {
     public ganacheServer: any;
     private storedInt: number;
     private storedString: string;
+    private contractSource: string;
+    private contractArguments: Object[];
 
     constructor() {
         super();
         this.storedInt = 0;
         this.storedString = "";
+        this.contractSource = "";
+        this.contractArguments = [];
         this.ganacheServer = ganache.server({ accounts: [{ balance: "300000000000000000000" }], total_accounts: 1 });
     }
 
@@ -103,18 +106,33 @@ class EthereumSimImpl extends EthereumSimulator {
         })
     }
 
+    public addContract(contractCode: string): void {
+        this.contractSource = contractCode;
+    }
+
+    public setArguments(...args: any[]): void {
+        for (var arg of args)
+            this.contractArguments.push(arg);
+    }
+
     public async compileStorageContract(intValue: number, stringValue: string): Promise<string> {
+        if (this.contractSource.length == 0) {
+            throw new Error("Must add contract source first");
+        }
+
         const web3 = new Web3(new Web3.providers.HttpProvider(this.getEndpoint()));
 
         // compile contract
-        const output = solc.compile(simpleStorage, 1);
+        const output = solc.compile(this.contractSource, 1);
         if (output.errors)
             throw output.errors;
-        const bytecode = output.contracts[":SimpleStorage"].bytecode;
-        const abi = JSON.parse(output.contracts[":SimpleStorage"].interface);
+            
+        const contractName = Object.keys(output.contracts)[0];
+        const bytecode = output.contracts[contractName].bytecode;
+        const abi = JSON.parse(output.contracts[contractName].interface);
         // deploy contract
         const contract = new web3.eth.Contract(abi, { data: "0x" + bytecode });
-        const tx = contract.deploy({ arguments: [intValue, stringValue] });
+        const tx = contract.deploy({ arguments: this.contractArguments });
         const account = (await web3.eth.getAccounts())[0];
         const contractInstance = await <Contract>tx.send({
             from: account,
@@ -132,12 +150,15 @@ class EthereumSimImpl extends EthereumSimulator {
     }
 }
 
-export default async function createEthSimulator(port: number): Promise<EthereumSimulator> {
+export default async function createEthSimulator(port: number, source: string): Promise<EthereumSimulator> {
     const ethSim = new EthereumSimImpl();
     await ethSim.listen(port);
+    ethSim.addContract(source);
 
     const intValue = Math.floor(Math.random() * 10000000);
     const stringValue = "magic money!";
+
+    ethSim.setArguments(intValue, stringValue);
 
     ethSim.contractAddress = await ethSim.compileStorageContract(intValue, stringValue);
 

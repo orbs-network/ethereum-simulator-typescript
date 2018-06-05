@@ -3,6 +3,7 @@ import * as chai from "chai";
 import * as getPort from "get-port";
 
 import createEthSimulator, { EthereumSimulator } from "../lib/index";
+import { simpleStorage } from "../lib/contracts/simple-storage.sol";
 
 const expect = chai.expect;
 
@@ -13,7 +14,7 @@ describe("simulator test", function() {
     beforeEach(async () => {
         const ethSimPort = await getPort();
         
-        ethSim = await createEthSimulator(ethSimPort);
+        ethSim = await createEthSimulator(ethSimPort, simpleStorage);
         console.log(`ethsim online on port ${ethSimPort}`);
     });
     
