@@ -1,0 +1,7 @@
+/lib/
+test/
+package-lock.json
+.vscode/
+dist/test
+tsconfig.json
+build.sh

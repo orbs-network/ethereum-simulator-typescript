@@ -2,8 +2,8 @@
   "name": "ethereum-simulator",
   "version": "1.0.0",
   "description": "A typescript library to instrument ganache+web3+solc and test a smart contract end-to-end",
-  "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.js",
   "scripts": {
     "build": "tsc",
     "test": "mocha dist/test/*.spec.js"
