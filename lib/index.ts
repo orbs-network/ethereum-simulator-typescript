@@ -15,7 +15,7 @@ export interface EthereumFunctionInterface {
 }
 
 export interface DataFromEthereum {
-    result: string;
+    result: { [key:string]: {value: string} };
     blockNumber: number;
     timestamp: number;
 }
