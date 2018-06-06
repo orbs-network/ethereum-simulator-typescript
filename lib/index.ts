@@ -37,7 +37,7 @@ export class EthereumSimulator {
 
     public async listen(port: number): Promise<void> {
         this.port = port;
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve) => {
             this.ganacheServer.listen(this.port, function () {
                 resolve();
             });

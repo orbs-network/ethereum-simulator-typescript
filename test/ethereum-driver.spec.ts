@@ -1,4 +1,3 @@
-import * as mocha from "mocha";
 import * as chai from "chai";
 import * as getPort from "get-port";
 
@@ -13,13 +12,11 @@ async function createEthSimulator(port: number): Promise<EthereumSimulator> {
     return ethSim;
 }
 
-
 describe("simulator test", function() {
     this.timeout(10000);
     let ethSim: EthereumSimulator;
     let intValue: number;
     let stringValue: string;
-    let contractAddress: string;
 
     beforeEach(async () => {
         const ethSimPort = await getPort();
