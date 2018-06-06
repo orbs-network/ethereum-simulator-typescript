@@ -107,7 +107,8 @@ export class EthereumSimulator {
         return this.contractAddress;
     }
 
-    public close() {
-        this.ganacheServer.close();
+    public async close() {
+        await this.ganacheServer.close()
+        this.port = 0;
     }
 }
