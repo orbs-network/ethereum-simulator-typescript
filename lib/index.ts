@@ -4,22 +4,6 @@ const Web3 = require("web3");
 
 import { Contract } from "web3/types";
 
-export abstract class EthereumSimulator {
-    contractAddress: string;
-    port: number;
-
-    constructor() {
-        this.port = 0;
-        this.contractAddress = "";
-    }
-
-    abstract listen(port: number): Promise<void>;
-    abstract close(): void;
-    abstract getStoredDataFromMemory(): StorageContractItem;
-    abstract async getDataFromEthereum(contractAddress: string): Promise<DataFromEthereum>;
-    abstract addContract(contractCode: string): void;
-}
-
 export interface EthereumFunctionParameter {
     name: string;
     type: string;
@@ -41,15 +25,18 @@ export interface DataFromEthereum {
     timestamp: number;
 }
 
-class EthereumSimImpl extends EthereumSimulator {
+export class EthereumSimulator {
     public ganacheServer: any;
+    public contractAddress: string;
+    public port: number;
     private storedInt: number;
     private storedString: string;
     private contractSource: string;
     private contractArguments: Object[];
 
     constructor() {
-        super();
+        this.port = 0;
+        this.contractAddress = "";
         this.storedInt = 0;
         this.storedString = "";
         this.contractSource = "";
@@ -151,7 +138,7 @@ class EthereumSimImpl extends EthereumSimulator {
 }
 
 export default async function createEthSimulator(port: number, source: string): Promise<EthereumSimulator> {
-    const ethSim = new EthereumSimImpl();
+    const ethSim = new EthereumSimulator();
     await ethSim.listen(port);
     ethSim.addContract(source);
 
