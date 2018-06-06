@@ -13,7 +13,7 @@ async function createEthSimulator(port: number, source: string, intValue: number
     ethSim.addContract(source);
     ethSim.setArguments(intValue, stringValue);
 
-    ethSim.contractAddress = await ethSim.compileContract();
+    ethSim.contractAddress = await ethSim.compileAndDeployContract();
 
     return ethSim;
 }

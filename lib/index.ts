@@ -91,7 +91,7 @@ export class EthereumSimulator {
             this.contractArguments.push(arg);
     }
 
-    public async compileContract(): Promise<string> {
+    public async compileAndDeployContract(): Promise<string> {
         if (this.contractSource.length == 0) {
             throw new Error("Must add contract source first");
         }
