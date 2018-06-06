@@ -88,7 +88,6 @@ export class EthereumSimulator {
 
         const web3 = new Web3(new Web3.providers.HttpProvider(this.getEndpoint()));
 
-        // compile contract
         const output = solc.compile(this.contractSource, 1);
         if (output.errors)
             throw output.errors;
@@ -96,7 +95,6 @@ export class EthereumSimulator {
         const contractName = Object.keys(output.contracts)[0];
         const bytecode = output.contracts[contractName].bytecode;
         const abi = JSON.parse(output.contracts[contractName].interface);
-        // deploy contract
         const contract = new web3.eth.Contract(abi, { data: "0x" + bytecode });
         const tx = contract.deploy({ arguments: this.contractArguments });
         const account = (await web3.eth.getAccounts())[0];
