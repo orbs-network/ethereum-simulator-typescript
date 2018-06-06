@@ -2,7 +2,7 @@ import * as ganache from "ganache-core";
 import * as solc from "solc";
 const Web3 = require("web3");
 
-import { Contract } from "web3/types";
+import { Contract, Block } from "web3/types";
 
 export interface EthereumFunctionParameter {
     name: string;
@@ -51,17 +51,20 @@ export class EthereumSimulator {
         return `http://localhost:${this.port}`;
     }
 
-    public async callDataFromSimulator(contractAddress: string, functionInterface: EthereumFunctionInterface): Promise<DataFromEthereum> {
-        return this.callDataFromEthereum(this.getEndpoint(), contractAddress, functionInterface);
+    public async callDataFromSimulator(contractAddress: string, functionInterface: EthereumFunctionInterface, block?: Block): Promise<DataFromEthereum> {
+        return this.callDataFromEthereum(this.getEndpoint(), contractAddress, functionInterface, block as Block);
     }
 
-    public async callDataFromEthereum(endpoint: string, contractAddress: string, functionInterface: EthereumFunctionInterface): Promise<DataFromEthereum> {
+    public async callDataFromEthereum(endpoint: string, contractAddress: string, functionInterface: EthereumFunctionInterface, block: Block): Promise<DataFromEthereum> {
         const web3 = new Web3(new Web3.providers.HttpProvider(endpoint));
 
-        const block = await web3.eth.getBlock("latest");
+        if (!block) {
+            block = await web3.eth.getBlock("latest");
+        }
+
         const callData = web3.eth.abi.encodeFunctionCall(functionInterface, <string[]>[]);
         const outputHexString = await web3.eth.call({ to: contractAddress, data: callData }, block.number);
-        const output = web3.eth.abi.decodeParameters(functionInterface.outputs as any, outputHexString);
+        const output = web3.eth.abi.decodeParameters(functionInterface.outputs, outputHexString);
 
         return new Promise<DataFromEthereum>((resolve) => {
             resolve({
