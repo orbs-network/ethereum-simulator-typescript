@@ -14,11 +14,6 @@ export interface EthereumFunctionInterface {
     outputs: EthereumFunctionParameter[];
 }
 
-export interface StorageContractItem {
-    intValue: number;
-    stringValue: string;
-}
-
 export interface DataFromEthereum {
     result: string;
     blockNumber: number;
@@ -56,22 +51,17 @@ export class EthereumSimulator {
         return `http://localhost:${this.port}`;
     }
 
-    public async getDataFromEthereum(contractAddress: string): Promise<DataFromEthereum> {
-        const web3 = new Web3(new Web3.providers.HttpProvider(this.getEndpoint()));
+    public async callDataFromSimulator(contractAddress: string, functionInterface: EthereumFunctionInterface): Promise<DataFromEthereum> {
+        return this.callDataFromEthereum(this.getEndpoint(), contractAddress, functionInterface);
+    }
 
-        const ethFuncInterface = {
-            name: "getValues",
-            inputs: <EthereumFunctionParameter[]>[],
-            outputs: [
-              { name: "intValue", type: "uint256" },
-              { name: "stringValue", type: "string" }
-            ]
-          };
+    public async callDataFromEthereum(endpoint: string, contractAddress: string, functionInterface: EthereumFunctionInterface): Promise<DataFromEthereum> {
+        const web3 = new Web3(new Web3.providers.HttpProvider(endpoint));
 
         const block = await web3.eth.getBlock("latest");
-        const callData = web3.eth.abi.encodeFunctionCall(ethFuncInterface, <string[]>[]);
+        const callData = web3.eth.abi.encodeFunctionCall(functionInterface, <string[]>[]);
         const outputHexString = await web3.eth.call({ to: contractAddress, data: callData }, block.number);
-        const output = web3.eth.abi.decodeParameters(ethFuncInterface.outputs as any, outputHexString);
+        const output = web3.eth.abi.decodeParameters(functionInterface.outputs as any, outputHexString);
 
         return new Promise<DataFromEthereum>((resolve) => {
             resolve({

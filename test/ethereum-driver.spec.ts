@@ -2,7 +2,7 @@ import * as mocha from "mocha";
 import * as chai from "chai";
 import * as getPort from "get-port";
 
-import { EthereumSimulator } from "../lib/index";
+import { EthereumSimulator, EthereumFunctionInterface, EthereumFunctionParameter } from "../lib/index";
 import { simpleStorage } from "../lib/contracts/simple-storage.sol";
 
 const expect = chai.expect;
@@ -39,7 +39,15 @@ describe("simulator test", function() {
     });
 
     it("should retrieve values from the contract", async () => {
-        const res = await ethSim.getDataFromEthereum(ethSim.contractAddress);
+        const storageFuncInterface: EthereumFunctionInterface = {
+            name: "getValues",
+            inputs: <EthereumFunctionParameter[]>[],
+            outputs: [
+              { name: "intValue", type: "uint256" },
+              { name: "stringValue", type: "string" }
+            ]
+          };
+        const res = await ethSim.callDataFromSimulator(ethSim.contractAddress, storageFuncInterface);
         expect(res).to.have.property("result").that.has.property("intValue", intValue.toString());
         expect(res).to.have.property("result").that.has.property("stringValue", stringValue);
         expect(res).to.have.property("blockNumber");
