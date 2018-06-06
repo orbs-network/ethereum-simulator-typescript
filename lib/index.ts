@@ -22,8 +22,8 @@ export interface DataFromEthereum {
 
 export class EthereumSimulator {
     public ganacheServer: any;
-    public contractAddress: string;
-    public port: number;
+    private contractAddress: string;
+    private port: number;
     private contractSource: string;
     private contractArguments: Object[];
 
@@ -105,7 +105,8 @@ export class EthereumSimulator {
             gas: await tx.estimateGas()
         });
 
-        return contractInstance.options.address;
+        this.contractAddress = contractInstance.options.address;
+        return this.contractAddress;
     }
 
     public close() {

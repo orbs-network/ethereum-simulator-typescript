@@ -7,14 +7,9 @@ import { simpleStorage } from "../lib/contracts/simple-storage.sol";
 
 const expect = chai.expect;
 
-async function createEthSimulator(port: number, source: string, intValue: number, stringValue: string): Promise<EthereumSimulator> {
+async function createEthSimulator(port: number): Promise<EthereumSimulator> {
     const ethSim = new EthereumSimulator();
     await ethSim.listen(port);
-    ethSim.addContract(source);
-    ethSim.setArguments(intValue, stringValue);
-
-    ethSim.contractAddress = await ethSim.compileAndDeployContract();
-
     return ethSim;
 }
 
@@ -24,21 +19,23 @@ describe("simulator test", function() {
     let ethSim: EthereumSimulator;
     let intValue: number;
     let stringValue: string;
+    let contractAddress: string;
 
     beforeEach(async () => {
         const ethSimPort = await getPort();
         intValue = Math.floor(Math.random() * 10000000);
         stringValue = "magic money!";
-        ethSim = await createEthSimulator(ethSimPort, simpleStorage, intValue, stringValue);
-        console.log(`ethsim online on port ${ethSimPort}`);
+        ethSim = await createEthSimulator(ethSimPort);
     });
     
     it("should launch successfully", async () => {
-        expect(ethSim.port).to.be.gt(0);
-        expect(ethSim.contractAddress).to.not.equal("");
+        expect(ethSim.getEndpoint()).to.not.throw;
     });
 
     it("should retrieve values from the contract", async () => {
+        ethSim.addContract(simpleStorage);
+        ethSim.setArguments(intValue, stringValue);
+        const contractAddress = await ethSim.compileAndDeployContract();
         const storageFuncInterface: EthereumFunctionInterface = {
             name: "getValues",
             inputs: <EthereumFunctionParameter[]>[],
@@ -47,7 +44,7 @@ describe("simulator test", function() {
               { name: "stringValue", type: "string" }
             ]
           };
-        const res = await ethSim.callDataFromSimulator(ethSim.contractAddress, storageFuncInterface);
+        const res = await ethSim.callDataFromSimulator(contractAddress, storageFuncInterface);
         expect(res).to.have.property("result").that.has.property("intValue", intValue.toString());
         expect(res).to.have.property("result").that.has.property("stringValue", stringValue);
         expect(res).to.have.property("blockNumber");
