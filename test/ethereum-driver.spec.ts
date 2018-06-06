@@ -2,19 +2,34 @@ import * as mocha from "mocha";
 import * as chai from "chai";
 import * as getPort from "get-port";
 
-import createEthSimulator, { EthereumSimulator } from "../lib/index";
+import { EthereumSimulator } from "../lib/index";
 import { simpleStorage } from "../lib/contracts/simple-storage.sol";
 
 const expect = chai.expect;
 
+async function createEthSimulator(port: number, source: string, intValue: number, stringValue: string): Promise<EthereumSimulator> {
+    const ethSim = new EthereumSimulator();
+    await ethSim.listen(port);
+    ethSim.addContract(source);
+    ethSim.setArguments(intValue, stringValue);
+
+    ethSim.contractAddress = await ethSim.compileStorageContract(intValue, stringValue);
+
+    return ethSim;
+}
+
+
 describe("simulator test", function() {
     this.timeout(10000);
     let ethSim: EthereumSimulator;
+    let intValue: number;
+    let stringValue: string;
 
     beforeEach(async () => {
         const ethSimPort = await getPort();
-        
-        ethSim = await createEthSimulator(ethSimPort, simpleStorage);
+        intValue = Math.floor(Math.random() * 10000000);
+        stringValue = "magic money!";
+        ethSim = await createEthSimulator(ethSimPort, simpleStorage, intValue, stringValue);
         console.log(`ethsim online on port ${ethSimPort}`);
     });
     

@@ -136,18 +136,3 @@ export class EthereumSimulator {
         this.ganacheServer.close();
     }
 }
-
-export default async function createEthSimulator(port: number, source: string): Promise<EthereumSimulator> {
-    const ethSim = new EthereumSimulator();
-    await ethSim.listen(port);
-    ethSim.addContract(source);
-
-    const intValue = Math.floor(Math.random() * 10000000);
-    const stringValue = "magic money!";
-
-    ethSim.setArguments(intValue, stringValue);
-
-    ethSim.contractAddress = await ethSim.compileStorageContract(intValue, stringValue);
-
-    return ethSim;
-}
