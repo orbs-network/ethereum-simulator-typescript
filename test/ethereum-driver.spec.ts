@@ -3,7 +3,7 @@ import * as chai from "chai";
 import * as getPort from "get-port";
 
 import { EthereumSimulator, EthereumFunctionInterface, EthereumFunctionParameter } from "../lib/index";
-import { simpleStorage } from "../lib/contracts/simple-storage.sol";
+import { simpleStorage } from "./contracts/simple-storage.sol";
 
 const expect = chai.expect;
 
