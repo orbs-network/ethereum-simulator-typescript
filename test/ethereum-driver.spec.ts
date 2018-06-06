@@ -13,7 +13,7 @@ async function createEthSimulator(port: number, source: string, intValue: number
     ethSim.addContract(source);
     ethSim.setArguments(intValue, stringValue);
 
-    ethSim.contractAddress = await ethSim.compileStorageContract(intValue, stringValue);
+    ethSim.contractAddress = await ethSim.compileContract();
 
     return ethSim;
 }
@@ -39,10 +39,9 @@ describe("simulator test", function() {
     });
 
     it("should retrieve values from the contract", async () => {
-        const source = ethSim.getStoredDataFromMemory();
         const res = await ethSim.getDataFromEthereum(ethSim.contractAddress);
-        expect(res).to.have.property("result").that.has.property("intValue", source.intValue.toString());
-        expect(res).to.have.property("result").that.has.property("stringValue", source.stringValue);
+        expect(res).to.have.property("result").that.has.property("intValue", intValue.toString());
+        expect(res).to.have.property("result").that.has.property("stringValue", stringValue);
         expect(res).to.have.property("blockNumber");
         expect(res).to.have.property("timestamp");
     })

@@ -29,16 +29,12 @@ export class EthereumSimulator {
     public ganacheServer: any;
     public contractAddress: string;
     public port: number;
-    private storedInt: number;
-    private storedString: string;
     private contractSource: string;
     private contractArguments: Object[];
 
     constructor() {
         this.port = 0;
         this.contractAddress = "";
-        this.storedInt = 0;
-        this.storedString = "";
         this.contractSource = "";
         this.contractArguments = [];
         this.ganacheServer = ganache.server({ accounts: [{ balance: "300000000000000000000" }], total_accounts: 1 });
@@ -58,13 +54,6 @@ export class EthereumSimulator {
             throw new Error("Simulator not listening on any endpoint");
         }
         return `http://localhost:${this.port}`;
-    }
-
-    public getStoredDataFromMemory(): StorageContractItem {
-        return {
-            intValue: this.storedInt,
-            stringValue: this.storedString
-        };
     }
 
     public async getDataFromEthereum(contractAddress: string): Promise<DataFromEthereum> {
@@ -102,7 +91,7 @@ export class EthereumSimulator {
             this.contractArguments.push(arg);
     }
 
-    public async compileStorageContract(intValue: number, stringValue: string): Promise<string> {
+    public async compileContract(): Promise<string> {
         if (this.contractSource.length == 0) {
             throw new Error("Must add contract source first");
         }
@@ -125,9 +114,6 @@ export class EthereumSimulator {
             from: account,
             gas: await tx.estimateGas()
         });
-
-        this.storedInt = intValue;
-        this.storedString = stringValue;
 
         return contractInstance.options.address;
     }
