@@ -9,4 +9,6 @@ jobs:
     steps:
       - checkout
       - run: npm install
+      # twice because for some reason it missed a package
+      - run: npm install
       - run: ./build.sh
