@@ -49,7 +49,7 @@ The test code instruments the entire function set with a sample contract (see [t
 There are several exposed methods:
 * `addContract` to add a contract to deploy on ganache, expects a string that contract the contract code.
 * `setArguments` to set the arguments to send when deploying the above contract
-* `compileAndDeployContract` this will compile and then deploy the contract added
+* `compileAndDeployContractOnGanache` this will compile and then deploy the contract added to the ganache instance
 * `callDataFromSimulator` this will call a specific contract and function interface on the simulator (closed loop testing of the contract)
 * `callDataFromEthereum` the same as above, but will accept a endpoint to work on
 

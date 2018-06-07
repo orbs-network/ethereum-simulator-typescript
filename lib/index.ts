@@ -84,7 +84,7 @@ export class EthereumSimulator {
             this.contractArguments.push(arg);
     }
 
-    public async compileAndDeployContract(): Promise<string> {
+    public async compileAndDeployContractOnGanache(): Promise<string> {
         if (this.contractSource.length == 0) {
             throw new Error("Must add contract source first");
         }
@@ -111,7 +111,9 @@ export class EthereumSimulator {
     }
 
     public async close() {
-        await this.ganacheServer.close()
-        this.port = 0;
+        if (this.port > 0) {
+            this.port = 0;
+            return this.ganacheServer.close()
+        }
     }
 }
