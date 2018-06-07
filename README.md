@@ -1,5 +1,10 @@
 # Ethereum Simulator
 
+[![npm](https://img.shields.io/npm/v/ethereum-simulator.svg)](https://www.npmjs.com/package/ethereum-simulator) 
+![npm type definitions](https://img.shields.io/npm/types/ethereum-simulator.svg) [![dependencies Status](https://david-dm.org/orbs-network/ethereum-simulator-typescript/status.svg)](https://david-dm.org/orbs-network/ethereum-simulator-typescript) 
+![CircleCI](https://img.shields.io/circleci/project/github/orbs-network/ethereum-simulator-typescript.svg) ![npm](https://img.shields.io/npm/l/ethereum-simulator.svg)
+
+ 
 A node.js module that runs a simulated ethereum node using ganache and enables compilation and execution of a contract call via web3 and solcjs.
 
 The goal of this module is to both enable you to quickly test your smart contracts via javascript/typescript and additionally, let you test your own web3 code vs. the ganache ethereum simulator.
